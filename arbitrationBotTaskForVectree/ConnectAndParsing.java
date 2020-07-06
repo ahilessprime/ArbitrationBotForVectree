@@ -8,9 +8,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 
 public class ConnectAndParsing {
 
@@ -19,8 +17,9 @@ public class ConnectAndParsing {
     private Currencies currencies = new Currencies();
     //массив содержитв себе полученные результат парсинга
     private HashMap<String, FutureTask<JsonObject>> resultParsing = new HashMap<>();
-    //массив созданных потоков для парсинга
-    private Thread[] arrayThreads = new Thread[currencies.size()];
+
+    ExecutorService executorService = Executors.newFixedThreadPool(20);
+
 
     public ConnectAndParsing(){}
     public ConnectAndParsing(ArrayList<URL> urlList) {
@@ -29,6 +28,8 @@ public class ConnectAndParsing {
 
 
     public void parsing(ArrayList<URL> urlList){
+
+
         for (int i = 0; i < currencies.size(); i++){
 
             //подключаемся в новом потоке,
@@ -49,9 +50,6 @@ public class ConnectAndParsing {
             //получаем содержимое ссылки в виде Json
             Callable<JsonObject> callable = () -> {
 
-
-                //добавляем поток в массив потоков
-                arrayThreads[finalI] = Thread.currentThread();
 
                 //в деталях не разобрался, если кто нибудь объяснит к чему все это,
                 //и почемы стримы не были закрыты в явном виде, буду очень благодарен.
@@ -76,31 +74,26 @@ public class ConnectAndParsing {
                 return json;
             };
 
-            FutureTask<JsonObject> future = new FutureTask<>(callable);
-            new Thread(future).start();
+            FutureTask<JsonObject> future;
+            future =(FutureTask<JsonObject>) executorService.submit(callable);
+
+
             resultParsing.put(currencies.get(i), future);
 
         }
+
+        executorService.shutdown();
     }
 
 
     public HashMap<String, JsonObject> getResultParsing(){
 
-        //ожидаем пока массив будет наполнен объектами, иначе вылетает NullPointException
-        //такой трюк признак говнокодера?
-        if (arrayThreads[arrayThreads.length - 1] == null){
-            try{
-                Thread.currentThread().join(50);
-            }catch (InterruptedException e){e.printStackTrace(System.err);}
-        }
+        //ожидаем пока Executor не завершится выполнив все задачи
+        //или до истечения 3 минут
+        try {
+            executorService.awaitTermination(3, TimeUnit.MINUTES);
+        }catch (InterruptedException e){e.printStackTrace(System.err);}
 
-        //удостоверимся, что завершенны все потоки
-        for (Thread thread : arrayThreads){
-            if(thread.isAlive()){ //если поток ещё жив
-                try{  thread.join(); } //ожидаем его завершения
-                catch (InterruptedException e){e.printStackTrace(System.err);}
-            }
-        }
 
         //коллекция с приведенными типами, которая будет возвращена методом
         HashMap<String, JsonObject> stakanTorgov = new HashMap<>();
@@ -115,10 +108,10 @@ public class ConnectAndParsing {
             catch (NullPointerException e){string=null; System.err.println("null - "+key);}
 
             if (string == null){ //если переменная ничего не содержит
-                resultParsing.remove(key); //удаляем из коллкции его ключ
+                resultParsing.remove(key); //удаляем из коллекции его ключ
             }
 
-            else if (string.contains("error")){ //если переменная содержит ошибку
+            else if (string.contains("error")){ //если переменная содержит сообщение об ошибке
                 resultParsing.remove(key); //удаляем из коллкции его ключ
                 System.err.println("error - "+key);
             }
