@@ -30,6 +30,9 @@ public class ConnectAndParsing {
     public void parsing(ArrayList<URL> urlList){
 
 
+
+
+
         for (int i = 0; i < currencies.size(); i++){
 
             //подключаемся в новом потоке,
@@ -44,11 +47,18 @@ public class ConnectAndParsing {
             //получаем ссылку
             URL url = urlList.get(i);
             //переменная i что бы использовать в лямбде
-            int finalI = i;
+            int  finalI = i;
 
 
             //получаем содержимое ссылки в виде Json
             Callable<JsonObject> callable = () -> {
+
+
+                //значение загрузки
+                System.out.print(" " +(finalI *  100/currencies.size())+"%\r");
+                if (finalI == currencies.size()-1){
+                    System.out.println(" 100% - all data uploaded.\n");
+                }
 
 
                 //в деталях не разобрался, если кто нибудь объяснит к чему все это,
@@ -67,10 +77,8 @@ public class ConnectAndParsing {
                     e.printStackTrace(System.err);
                 }
 
+
                 JsonObject json = new Gson().fromJson(response.toString(), JsonObject.class);
-
-
-
                 return json;
             };
 
@@ -83,6 +91,8 @@ public class ConnectAndParsing {
         }
 
         executorService.shutdown();
+
+
     }
 
 
