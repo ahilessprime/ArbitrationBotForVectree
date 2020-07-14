@@ -123,7 +123,7 @@ public class ConnectAndParsing {
 
 
         //новая коллекция с приведенными типами, которая будет возвращена методом
-        HashMap<String, JsonObject> stakanTorgov = new HashMap<>();
+        HashMap<String, JsonObject> OrderBook = new HashMap<>();
 
         //проверяем, все ли ключи коллекции, содержат нужные данные
         for (String key : currencies){
@@ -136,17 +136,17 @@ public class ConnectAndParsing {
 
             if (string == null){ //если переменная ничего не содержит
                 resultParsing.remove(key); //удаляем из коллекции его ключ
-                System.err.println("null - "+key);
+                System.err.println("return null - "+key);
             }
 
             else if (string.contains("error")){ //если переменная содержит сообщение об ошибке
                 resultParsing.remove(key); //удаляем из коллкции его ключ
-                System.err.println("error - "+key);
+                System.err.println("return error - "+key);
             }
 
             else{ //если все в порядке
                 try{
-                stakanTorgov.put(key, future.get());} //добовляем в коллецию с ключем
+                OrderBook.put(key, future.get());} //добовляем в коллецию с ключем
                 catch (InterruptedException e){e.printStackTrace(System.err);}
                 catch (ExecutionException e){e.printStackTrace(System.err);}
 
@@ -155,7 +155,7 @@ public class ConnectAndParsing {
 
 
         //возвращаем готовую, приведенную к JsonObject коллекцию.
-        return stakanTorgov;
+        return OrderBook;
     }
 
 

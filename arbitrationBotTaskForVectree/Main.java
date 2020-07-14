@@ -1,8 +1,6 @@
 package arbitrationBotTaskForVectree;
 
 
-
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import java.net.MalformedURLException;
@@ -13,7 +11,7 @@ import java.util.HashMap;
 public class Main {
 
     private static ArrayList<URL> urlList;
-    private static HashMap<String, JsonObject> stakanTorgov;
+    private static HashMap<String, JsonObject> orderBookJson;
 
     public static void main(String[] args) {
 
@@ -24,18 +22,25 @@ public class Main {
         //подключаемся к нету, парсим ссылки и получаем по ним объект
         ConnectAndParsing connectAndParsing = new ConnectAndParsing(urlList);
         //получаем результат парсинга
-        stakanTorgov = connectAndParsing.getResultParsing();
-        System.out.println(stakanTorgov.size());
-        System.out.println(stakanTorgov.get("BTC_ETH"));
-        //а теперь как работать с этим жейсоном
-        //ну ок, с этим как то разобрался. обновил список валют
-        //там их дофига а запускать всех их в новых потоках тупо.
-        //нужно разобраться с executorom и отрефакторить connectAndParsing под него
-        //ок, теперь нужен бар загрузки для парсинга. что там у командной строки?
+        orderBookJson = connectAndParsing.getResultParsing();
+
+        //переводим объекты Json в Java
+        JsonToJavaObject jsonToJava = new JsonToJavaObject(orderBookJson);
+
+
+
+
+        System.out.println(orderBookJson.size());
+        System.out.println(orderBookJson.get("BTC_ETH"));
 
 
     }
 }
+
+
+
+
+
 
 class UrlBulder{
 
