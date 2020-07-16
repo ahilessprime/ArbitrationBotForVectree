@@ -25,6 +25,17 @@ public class JsonToJavaObject {
             Gson gson = builder.create();
 
             class PrimitiveObject{
+
+                public PrimitiveObject(){}
+                public PrimitiveObject(Map<String, Double> asks, Map<String, Double> bids,
+                                       String isFrozen, int seq){
+                    this.asks = asks;
+                    this.bids = bids;
+                    this.isFrozen = isFrozen;
+                    this.seq = seq;
+                }
+
+
                 //public HashMap<String, Double> asks;
                 //public HashMap<String, Double> bids;
                 private Map<String, Double> asks;
