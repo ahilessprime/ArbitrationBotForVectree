@@ -23,15 +23,49 @@ public class JsonToJavaObject {
             JsonObject jsonObject = orderBookJson.get(key);
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
+
             class PrimitiveObject{
                 //public HashMap<String, Double> asks;
                 //public HashMap<String, Double> bids;
-                public Map<String, Double> asks;
-                public Map<String, Double> bids;
-                public String isFrozen;
-                public int seq;
+                private Map<String, Double> asks;
+                private Map<String, Double> bids;
+                private String isFrozen;
+                private int seq;
+
+                public void setAsks(Map<String, Double> asks) {
+                    this.asks = asks;
+                }
+
+                public void setBids(Map<String, Double> bids) {
+                    this.bids = bids;
+                }
+
+                public void setIsFrozen(String isFrozen) {
+                    this.isFrozen = isFrozen;
+                }
+
+                public void setSeq(int seq) {
+                    this.seq = seq;
+                }
+
+                public Map<String, Double> getAsks() {
+                    return asks;
+                }
+
+                public int getSeq() {
+                    return seq;
+                }
+
+                public Map<String, Double> getBids() {
+                    return bids;
+                }
+
+                public String getIsFrozen() {
+                    return isFrozen;
+                }
             }
 
+            System.out.println(jsonObject.toString());
             PrimitiveObject primitiveObject = gson.fromJson(jsonObject, PrimitiveObject.class);
             System.out.println(primitiveObject.asks.get(0));
 
