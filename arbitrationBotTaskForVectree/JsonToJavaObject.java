@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,62 +24,8 @@ public class JsonToJavaObject {
             JsonObject jsonObject = orderBookJson.get(key);
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
-
-            class PrimitiveObject{
-
-                public PrimitiveObject(){}
-                public PrimitiveObject(Map<String, Double> asks, Map<String, Double> bids,
-                                       String isFrozen, int seq){
-                    this.asks = asks;
-                    this.bids = bids;
-                    this.isFrozen = isFrozen;
-                    this.seq = seq;
-                }
-
-
-                //public HashMap<String, Double> asks;
-                //public HashMap<String, Double> bids;
-                private Map<String, Double> asks;
-                private Map<String, Double> bids;
-                private String isFrozen;
-                private int seq;
-
-                public void setAsks(Map<String, Double> asks) {
-                    this.asks = asks;
-                }
-
-                public void setBids(Map<String, Double> bids) {
-                    this.bids = bids;
-                }
-
-                public void setIsFrozen(String isFrozen) {
-                    this.isFrozen = isFrozen;
-                }
-
-                public void setSeq(int seq) {
-                    this.seq = seq;
-                }
-
-                public Map<String, Double> getAsks() {
-                    return asks;
-                }
-
-                public int getSeq() {
-                    return seq;
-                }
-
-                public Map<String, Double> getBids() {
-                    return bids;
-                }
-
-                public String getIsFrozen() {
-                    return isFrozen;
-                }
-            }
-
-            System.out.println(jsonObject.toString());
-            PrimitiveObject primitiveObject = gson.fromJson(jsonObject, PrimitiveObject.class);
-            System.out.println(primitiveObject.asks.get(0));
+            PrimitiveObject primitiveObject =  gson.fromJson(jsonObject, PrimitiveObject.class);
+            System.out.println(primitiveObject.getAsks());
 
         }
     }
@@ -86,6 +33,32 @@ public class JsonToJavaObject {
     public void setOrderBookJson(HashMap<String, JsonObject> orderBookJson) {
         this.orderBookJson = orderBookJson;
         changeJsonToJava();
+    }
+}
+
+class PrimitiveObject{
+
+    public PrimitiveObject(){}
+
+    //@SerializedName("asks")
+    private Map <String,Double> asks = new HashMap<>();
+    //@SerializedName("bids")
+    private Map <String,Double> bids = new HashMap<>();
+
+    public Map<String, Double> getAsks() {
+        return asks;
+    }
+
+    public void setAsks(Map<String, Double> asks) {
+        this.asks = asks;
+    }
+
+    public Map<String, Double> getBids() {
+        return bids;
+    }
+
+    public void setBids(Map<String, Double> bids) {
+        this.bids = bids;
     }
 }
 
