@@ -7,11 +7,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Main {
 
     private static ArrayList<URL> urlList;
     private static HashMap<String, JsonObject> orderBookJson;
+    private static ConcurrentHashMap<String, OrderBookJava> orderBooksJava;
 
     public static void main(String[] args) {
 
@@ -26,12 +28,14 @@ public class Main {
 
         //переводим объекты Json в Java
         JsonToJavaObject jsonToJava = new JsonToJavaObject(orderBookJson);
+        orderBooksJava = jsonToJava.getOrderBooksJava();
 
 
 
 
-        System.out.println(orderBookJson.size());
-        System.out.println(orderBookJson.get("BTC_ETH"));
+
+        System.out.println(orderBooksJava.size());
+        System.out.println(orderBooksJava.get("BTC_ETH"));
 
 
     }

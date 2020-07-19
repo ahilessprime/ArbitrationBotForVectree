@@ -12,7 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class JsonToJavaObject {
 
     private  HashMap<String, JsonObject> orderBookJson;
-    private ConcurrentHashMap<String, OrderBookJava> orderBooksJava;
+    private ConcurrentHashMap<String, OrderBookJava> orderBooksJava
+            = new ConcurrentHashMap<>();
 
     public JsonToJavaObject(HashMap<String, JsonObject> orderBookJson){
         this.orderBookJson = orderBookJson;
@@ -25,14 +26,39 @@ public class JsonToJavaObject {
             GsonBuilder builder = new GsonBuilder();
             Gson gson = builder.create();
             PrimitiveObject primitiveObject =  gson.fromJson(jsonObject, PrimitiveObject.class);
-            System.out.println(primitiveObject.getAsks());
 
+
+            HashMap<Float, Float> formattingAsksToOrderBookJava = new HashMap<>();
+
+            for (String keyFloat: primitiveObject.getAsks().keySet()){
+                Float value = Float.parseFloat(keyFloat);
+                formattingAsksToOrderBookJava.put(value, primitiveObject.getAsks().get(keyFloat));
+            }
+
+
+            HashMap<Float, Float> formattingBidsToOrderBookJava = new HashMap<>();
+
+            for (String keyFloat: primitiveObject.getBids().keySet()){
+                Float value = Float.parseFloat(keyFloat);
+                formattingBidsToOrderBookJava.put(value, primitiveObject.getBids().get(keyFloat));
+            }
+
+            OrderBookJava orderBJ = new OrderBookJava(key, formattingAsksToOrderBookJava,
+                    formattingBidsToOrderBookJava);
+
+            orderBooksJava.put(key, orderBJ);
         }
+
     }
+
 
     public void setOrderBookJson(HashMap<String, JsonObject> orderBookJson) {
         this.orderBookJson = orderBookJson;
         changeJsonToJava();
+    }
+
+    public ConcurrentHashMap<String, OrderBookJava> getOrderBooksJava(){
+        return orderBooksJava;
     }
 }
 
@@ -41,23 +67,24 @@ class PrimitiveObject{
     public PrimitiveObject(){}
 
     //@SerializedName("asks")
-    private Map <String,Double> asks = new HashMap<>();
+    private Map <String,Float> asks = new HashMap<>();
     //@SerializedName("bids")
-    private Map <String,Double> bids = new HashMap<>();
+    private Map <String,Float> bids = new HashMap<>();
 
-    public Map<String, Double> getAsks() {
+
+    public Map<String, Float> getAsks() {
         return asks;
     }
 
-    public void setAsks(Map<String, Double> asks) {
+    public void setAsks(Map<String, Float> asks) {
         this.asks = asks;
     }
 
-    public Map<String, Double> getBids() {
+    public Map<String, Float> getBids() {
         return bids;
     }
 
-    public void setBids(Map<String, Double> bids) {
+    public void setBids(Map<String, Float> bids) {
         this.bids = bids;
     }
 }
@@ -65,27 +92,4 @@ class PrimitiveObject{
 
 
 
-class OrderBookJava {
 
-    private String nameСurrency;
-    private HashMap<Double, Double> asks = new HashMap<>();
-    private HashMap<Double, Double> bids = new HashMap<>();
-
-    public OrderBookJava(String nameСurrency, HashMap asks, HashMap bids ){
-        this.nameСurrency = nameСurrency;
-        this.asks = asks;
-        this.bids = bids;
-    }
-
-    public String getNameСurrency() {
-        return nameСurrency;
-    }
-
-    public HashMap<Double, Double> getAsks() {
-        return asks;
-    }
-
-    public HashMap<Double, Double> getBids() {
-        return bids;
-    }
-}
