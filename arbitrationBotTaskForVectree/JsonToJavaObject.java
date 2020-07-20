@@ -46,7 +46,20 @@ public class JsonToJavaObject {
 
     //метод приводящий Json к Java
     private void changeJsonToJava(){
+
+        //для шкалы загрузки
+        System.out.println();
+        int i = 0;
+
         for (String key: orderBookJson.keySet()){
+
+            //шкала загрузки форматирования
+            i++;
+            System.out.print(" " +(i *  100/orderBookJson.size())+"% - распаковка данных.\r");
+            if (i == orderBookJson.size()-1){
+                System.out.println(" 100% - все данные распакованны.\n");
+            }
+
 
             //готовим Json Объект
             JsonObject jsonObject = orderBookJson.get(key);
