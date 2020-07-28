@@ -30,8 +30,9 @@ public class Main {
         JsonToJavaObject jsonToJava = new JsonToJavaObject(orderBookJson);
         orderBooksJava = jsonToJava.getOrderBooksJava();
 
-
-
+        //поиск арбитражной ситуации
+        SearchArbitrationSituation arbitrationSituation = new SearchArbitrationSituation(orderBooksJava);
+        arbitrationSituation.startParsing();
 
 
         System.out.println(orderBooksJava.size());

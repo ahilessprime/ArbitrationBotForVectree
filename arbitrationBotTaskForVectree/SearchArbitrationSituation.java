@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.concurrent.*;
 
 public class SearchArbitrationSituation {
@@ -34,7 +35,7 @@ public class SearchArbitrationSituation {
 
             Callable<List> callable = () -> {
 
-                return parsingThisSiuation(orderBook, orderBooksJava);
+                return parsingThisSiuation(orderBook, true);
             };
 
 
@@ -51,15 +52,20 @@ public class SearchArbitrationSituation {
 
 
     //метод который парсит данную ситуацию
-    private List parsingThisSiuation(OrderBookJava orderBookJava, Map orderBooksJava) {
+    private List parsingThisSiuation(OrderBookJava orderBookJava, boolean recursion) {
 
         String nameСurrency = orderBookJava.getNameСurrency();
+        String[] pairToString = returnPairToArrString(nameСurrency);
+
+
+        System.out.println(pairToString[0].toString());
+
 
     return null; }
 
     //метод который из пары валют делит на валюты, для их последующих сравнений
-    private String[] returnOfCurrencyFromAPair(String pairCurrency) {
-        return null;
+    private String[] returnPairToArrString(String pairCurrency) {
+        return pairCurrency.split("_");
     }
 
     public static void setOrderBooksJava(ConcurrentHashMap<String, OrderBookJava> orderBooksJava) {
