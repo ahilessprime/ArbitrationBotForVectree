@@ -35,7 +35,9 @@ public class SearchArbitrationSituation {
 
             Callable<List> callable = () -> {
 
-                return parsingThisSiuation(orderBook, true);
+                new ParsingThisSiuation(orderBooksJava).parsingThisSiuation(orderBook);
+
+                return null;
             };
 
 
@@ -51,24 +53,60 @@ public class SearchArbitrationSituation {
     }
 
 
+    public static void setOrderBooksJava(ConcurrentHashMap<String, OrderBookJava> orderBooksJava) {
+        SearchArbitrationSituation.orderBooksJava = orderBooksJava;
+    }
+}
+
+class ParsingThisSiuation{
+
+    private Map orderBooksJava;
+
+    public ParsingThisSiuation(Map orderBooksJava){
+        this.orderBooksJava = orderBooksJava;
+    }
+
+
+    public List parsingThisSiuation(OrderBookJava orderBookJava){
+        return parsingThisSiuation(orderBookJava, false);
+    }
+
     //метод который парсит данную ситуацию
     private List parsingThisSiuation(OrderBookJava orderBookJava, boolean recursion) {
 
         String nameСurrency = orderBookJava.getNameСurrency();
         String[] pairToString = returnPairToArrString(nameСurrency);
 
+        float price = 0;
+        float volume = 0;
 
-        System.out.println(pairToString[0].toString());
+        HashMap asks = orderBookJava.getAsks();
+
+        for (Object variablePrice : asks.keySet()){
+            float variable = (float) variablePrice;
+            if (price == 0){
+                price = variable;
+            }
+            if (price > variable){
+                price = variable;
+                volume = (float) asks.get(variablePrice);
+            }
+        }
+
+        System.out.println(price + " - "+ volume);
 
 
-    return null; }
+
+
+
+
+
+        return null;
+    }
 
     //метод который из пары валют делит на валюты, для их последующих сравнений
     private String[] returnPairToArrString(String pairCurrency) {
         return pairCurrency.split("_");
     }
 
-    public static void setOrderBooksJava(ConcurrentHashMap<String, OrderBookJava> orderBooksJava) {
-        SearchArbitrationSituation.orderBooksJava = orderBooksJava;
-    }
 }
