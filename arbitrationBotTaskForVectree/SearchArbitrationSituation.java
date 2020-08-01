@@ -2,10 +2,8 @@ package arbitrationBotTaskForVectree;
 
 import com.google.gson.JsonObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class SearchArbitrationSituation {
@@ -60,7 +58,7 @@ public class SearchArbitrationSituation {
 
 class ParsingThisSiuation{
 
-    private Map orderBooksJava;
+    private Map<String, OrderBookJava> orderBooksJava;
 
     public ParsingThisSiuation(Map orderBooksJava){
         this.orderBooksJava = orderBooksJava;
@@ -68,33 +66,59 @@ class ParsingThisSiuation{
 
 
     public List parsingThisSiuation(OrderBookJava orderBookJava){
-        return parsingThisSiuation(orderBookJava, false);
+        return parsingThisSiuation(orderBookJava, true);
     }
 
     //метод который парсит данную ситуацию
     private List parsingThisSiuation(OrderBookJava orderBookJava, boolean recursion) {
 
+
         String nameСurrency = orderBookJava.getNameСurrency();
+        //разделяем названия для их последующего парсинга, по отдельности.
         String[] pairToString = returnPairToArrString(nameСurrency);
 
-        float price = 0;
-        float volume = 0;
+        float price = 0; //цена лучшего предложения
+        float volume = 0; //и количество
 
-        HashMap asks = orderBookJava.getAsks();
+        //поиск лучшего предложения
+        for (float variablePrice : orderBookJava.getAsks().keySet()){
 
-        for (Object variablePrice : asks.keySet()){
-            float variable = (float) variablePrice;
+
             if (price == 0){
-                price = variable;
+                price = variablePrice;
             }
-            if (price > variable){
-                price = variable;
-                volume = (float) asks.get(variablePrice);
+
+            if (price > variablePrice){
+                price = variablePrice;
+                volume = (float) orderBookJava.getAsks().get(variablePrice);
             }
         }
 
-        System.out.println(price + " - "+ volume);
+        String nameOffer = pairToString[1]; //имя валюты на которая была лучшее предложение
 
+        if (recursion){
+
+            //коллекция предложний валют, которые соответствуют требованиям.
+            ArrayList<OrderBookJava> listOrderBook = new ArrayList<>();
+
+            //парсим все пары валют на соответствие с этим именем
+            for (String currencyPair : orderBooksJava.keySet()){
+
+                //пропускаем валюту для которого проводится этот парсинг
+                if(nameСurrency.equals(currencyPair)){ break; }
+
+                //пропускаем пары валют, в которых не входит нужная нам валюта
+                if (!currencyPair.equals(nameOffer)) {break; }
+
+                //добавляем в коллекцию все предложения валют, которые соответсвуют требованиям.
+                listOrderBook.add(orderBooksJava.get(currencyPair));
+            }
+
+
+            System.out.println(nameOffer);
+            System.out.println(nameСurrency);
+
+        }
 
 
 
