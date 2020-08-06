@@ -31,9 +31,10 @@ public class SearchArbitrationSituation {
             //взываем нужную нам хрень
             OrderBookJava orderBook = orderBooksJava.get(currencyPair);
 
+
             Callable<List> callable = () -> {
 
-                new ParsingThisSiuation(orderBooksJava).parsingThisSiuation(orderBook);
+                new ParsingThisSiuation(orderBooksJava).parsing(orderBook);
 
                 return null;
             };
@@ -65,12 +66,12 @@ class ParsingThisSiuation{
     }
 
 
-    public List parsingThisSiuation(OrderBookJava orderBookJava){
-        return parsingThisSiuation(orderBookJava, true);
+    public List parsing(OrderBookJava orderBookJava){
+        return parsing(orderBookJava, true);
     }
 
     //метод который парсит данную ситуацию
-    private List parsingThisSiuation(OrderBookJava orderBookJava, boolean recursion) {
+    private List parsing(OrderBookJava orderBookJava, boolean recursion) {
 
 
         String nameСurrency = orderBookJava.getNameСurrency();
@@ -91,6 +92,7 @@ class ParsingThisSiuation{
             if (price > variablePrice){
                 price = variablePrice;
                 volume = (float) orderBookJava.getAsks().get(variablePrice);
+
             }
         }
 
@@ -98,7 +100,7 @@ class ParsingThisSiuation{
 
         if (recursion){
 
-            //коллекция предложний валют, которые соответствуют требованиям.
+            //коллекция предложений валют, которые соответствуют требованиям.
             ArrayList<OrderBookJava> listOrderBook = new ArrayList<>();
 
             //парсим все пары валют на соответствие с этим именем
@@ -108,15 +110,22 @@ class ParsingThisSiuation{
                 if(nameСurrency.equals(currencyPair)){ break; }
 
                 //пропускаем пары валют, в которых не входит нужная нам валюта
-                if (!currencyPair.equals(nameOffer)) {break; }
+                if ((currencyPair.indexOf(nameOffer)) == -1) {break; }
 
                 //добавляем в коллекцию все предложения валют, которые соответсвуют требованиям.
                 listOrderBook.add(orderBooksJava.get(currencyPair));
             }
 
+            System.out.println(listOrderBook.size());
 
-            System.out.println(nameOffer);
-            System.out.println(nameСurrency);
+            System.out.println(listOrderBook.get(0).getNameСurrency());
+            //тут возможно какая то ошибка
+
+
+
+            for (OrderBookJava ord: listOrderBook){
+                System.out.println(ord.getNameСurrency());
+            }
 
         }
 
