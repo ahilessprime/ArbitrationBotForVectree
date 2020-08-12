@@ -66,35 +66,25 @@ class ParsingThisSiuation{
     }
 
 
-    public List parsing(OrderBookJava orderBookJava){
+    public ArrayList parsing(OrderBookJava orderBookJava){
         return parsing(orderBookJava, true);
     }
 
     //метод который парсит данную ситуацию
-    private List parsing(OrderBookJava orderBookJava, boolean recursion) {
+    private ArrayList parsing(OrderBookJava orderBookJava, boolean recursion) {
 
 
         String nameСurrency = orderBookJava.getNameСurrency();
         //разделяем названия для их последующего парсинга, по отдельности.
         String[] pairToString = returnPairToArrString(nameСurrency);
 
-        float price = 0; //цена лучшего предложения
-        float volume = 0; //и количество
-
         //поиск лучшего предложения
-        for (float variablePrice : orderBookJava.getAsks().keySet()){
+        float[] arrfloat = bestOfferScanAsks(orderBookJava);
+        float price = arrfloat[0]; //цена лучшего предложения
+        float volume = arrfloat[1]; //и его количество
 
+        System.out.println(price+" luli "+volume);
 
-            if (price == 0){
-                price = variablePrice;
-            }
-
-            if (price > variablePrice){
-                price = variablePrice;
-                volume = (Float) orderBookJava.getAsks().get(variablePrice);
-
-            }
-        }
 
         String nameOffer = pairToString[1]; //имя валюты на которая была лучшее предложение
 
@@ -139,10 +129,12 @@ class ParsingThisSiuation{
                 }
             }
 
-            System.out.println(listOrderBook.size() + " " + orderBooksJava.size());
+            ArrayList<ArrayList> recursiveArrList = new ArrayList<>();
 
-            //System.out.println(listOrderBook.get(0).getNameСurrency());
-            //тут возможно какая то ошибка
+            //а теперь, нужно отпарсить валюты, соответстыующие парсингу
+            for (OrderBookJava orderRecursive : listOrderBook){
+                recursiveArrList.add(parsing(orderRecursive,false));
+            }
 
 
 
@@ -150,6 +142,9 @@ class ParsingThisSiuation{
                 System.out.println(ord.getNameСurrency());
             }
 
+        }
+        else{
+            
         }
 
 
@@ -163,6 +158,31 @@ class ParsingThisSiuation{
     //метод который из пары валют делит на валюты, для их последующих сравнений
     private String[] returnPairToArrString(String pairCurrency) {
         return pairCurrency.split("_");
+    }
+
+    //метод, ищущий лучшее предложение продажи
+    private float[] bestOfferScanAsks(OrderBookJava orderBookJava){
+        float price = 0; //цена лучшего предложения
+        float volume = 0; //и количество
+
+        //поиск лучшего предложения
+        for (float variablePrice : orderBookJava.getAsks().keySet()){
+
+
+            if (price == 0){
+                price = variablePrice;
+            }
+
+            if (price > variablePrice){
+                price = variablePrice;
+                volume =  orderBookJava.getAsks().get(variablePrice);
+
+            }
+        }
+
+        float[] arr = new float[]{price,volume};
+
+        return arr;
     }
 
 }
