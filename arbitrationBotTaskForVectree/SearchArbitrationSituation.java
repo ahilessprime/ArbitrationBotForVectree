@@ -66,12 +66,10 @@ class ParsingThisSiuation{
     }
 
 
-    public ArrayList parsing(OrderBookJava orderBookJava){
-        return parsing(orderBookJava, true);
-    }
+
 
     //метод который парсит данную ситуацию
-    private ArrayList parsing(OrderBookJava orderBookJava, boolean recursion) {
+    public ArrayList parsing(OrderBookJava orderBookJava) {
 
 
         String nameСurrency = orderBookJava.getNameСurrency();
@@ -83,70 +81,64 @@ class ParsingThisSiuation{
         float price = arrfloat[0]; //цена лучшего предложения
         float volume = arrfloat[1]; //и его количество
 
-        System.out.println(price+" luli "+volume);
+
+        System.out.println(price + " luli " + volume);
 
 
         String nameOffer = pairToString[1]; //имя валюты на которая была лучшее предложение
 
-        if (recursion){
 
-            //коллекция предложений валют, которые соответствуют требованиям.
-            ArrayList<OrderBookJava> listOrderBook = new ArrayList<>();
+        //коллекция предложений валют, которые соответствуют требованиям.
+        ArrayList<OrderBookJava> listOrderBook = new ArrayList<>();
 
-            System.out.println("имя "+nameСurrency);
-            System.out.println("ищем "+nameOffer);
+        System.out.println("имя " + nameСurrency);
+        System.out.println("ищем " + nameOffer);
 
-            //парсим все пары валют на соответствие с этим именем
-            for (String currencyPair : orderBooksJava.keySet()){
+        //парсим все пары валют на соответствие с этим именем
+        for (String currencyPair : orderBooksJava.keySet()) {
 
-                System.out.println("очередь "+currencyPair);
+            System.out.println("очередь " + currencyPair);
 
-                //пропускаем валюту для которого проводится этот парсинг
-                if(nameСurrency.equals(currencyPair)){System.out.println("та же валюта "+currencyPair); continue;}
+            //пропускаем валюту для которого проводится этот парсинг
+            if (nameСurrency.equals(currencyPair)) {
+                System.out.println("та же валюта " + currencyPair);
+                continue;
+            }
 
-                //пропускаем пары валют, в которых не входит нужная нам валюта
-                if ((currencyPair.indexOf(nameOffer)) == -1) {System.out.println("пропуск "+nameOffer+" - "+ currencyPair); continue; }
-
-                else {
-                    //проверяем на то, точно ли совпадает валюта
-                    String[] str = returnPairToArrString(currencyPair);
-                    boolean matches = false;
-                    for (String s:str){
-                        if (!matches){
-                            matches = nameOffer.equals(s);
-                        }
+            //пропускаем пары валют, в которых не входит нужная нам валюта
+            if ((currencyPair.indexOf(nameOffer)) == -1) {
+                System.out.println("пропуск " + nameOffer + " - " + currencyPair);
+                continue;
+            } else {
+                //проверяем на то, точно ли совпадает валюта
+                String[] str = returnPairToArrString(currencyPair);
+                boolean matches = false;
+                for (String s : str) {
+                    if (!matches) {
+                        matches = nameOffer.equals(s);
                     }
-                    //если не совпадает, возвращаемся к парсингу
-                    if (!matches){
-                        System.out.println("не совпадает "+nameOffer+" "+currencyPair );
-                        continue;
-                    }
-
-                    //иначе продолжаем
-                    System.out.println("добавляем в список "+orderBooksJava.get(currencyPair) );
-                    //добавляем в коллекцию предложение валют, которые соответсвуют требованиям.
-                    listOrderBook.add(orderBooksJava.get(currencyPair));
                 }
+                //если не совпадает, возвращаемся к парсингу
+                if (!matches) {
+                    System.out.println("не совпадает " + nameOffer + " " + currencyPair);
+                    continue;
+                }
+
+                //иначе продолжаем
+                System.out.println("добавляем в список " + orderBooksJava.get(currencyPair));
+                //добавляем в коллекцию предложение валют, которые соответсвуют требованиям.
+                listOrderBook.add(orderBooksJava.get(currencyPair));
             }
-
-            ArrayList<ArrayList> recursiveArrList = new ArrayList<>();
-
-            //а теперь, нужно отпарсить валюты, соответстыующие парсингу
-            for (OrderBookJava orderRecursive : listOrderBook){
-                recursiveArrList.add(parsing(orderRecursive,false));
-            }
-
-
-
-            for (OrderBookJava ord: listOrderBook){
-                System.out.println(ord.getNameСurrency());
-            }
-
-        }
-        else{
-            
         }
 
+
+        //а теперь, нужно отпарсить валюты, соответстыующие парсингу
+        for (OrderBookJava orderRecursive : listOrderBook) {
+            recursiveArrList.add(parsing(orderRecursive, false));
+        }
+
+
+    
 
 
 
