@@ -129,6 +129,11 @@ class ParsingThisSiuation{
         }
 
 
+        // лучшие параметры второго круга парсинга
+         OrderBookJava orderBookSecondTrade;
+        float secondProfit = 0;
+        float secondvolume = 0;
+
         //а теперь, нужно отпарсить список валют, которые могут представлять арбитражную ситуацю.
         for (OrderBookJava underOBJ : listOrderBook){
 
@@ -137,6 +142,7 @@ class ParsingThisSiuation{
              */
 
             String[] underPairToString = returnPairToArrString(underOBJ.getNameСurrency());
+
 
             //если значение валют в стакане расположенны по умолчанию
             if (nameOffer.equals(underPairToString[1])){
@@ -150,10 +156,31 @@ class ParsingThisSiuation{
                 float priceBid = underFloatArr[0]; //его цена
                 float volumeBid = underFloatArr[1]; //и предложение
 
-                //покупаем ровно столько сколько сможеи продать
+                //проверяем, можем ли продать с выгодой
+                if (volumeAsk < volumeBid) {
+                    System.out.println("не выгодно");
+                    continue; }
+
+                //начальное значение, если его нет
+                if (secondProfit == 0){
+                    orderBookSecondTrade = underOBJ;
+                    secondProfit = priceAsk - priceBid;
+                    secondvolume = volumeBid;
+                }
+
+                if (secondProfit < (priceAsk-priceBid)){
+                    orderBookSecondTrade = underOBJ;
+                    secondProfit = priceAsk - priceBid;
+                    secondvolume = volumeBid;
+                }
+
+                //покупаем ровно столько сколько сможем продать
+
 
             }
             else{
+
+                System.out.println("ИНАЧЕ "+ underOBJ.getNameСurrency());
 
             }
 
