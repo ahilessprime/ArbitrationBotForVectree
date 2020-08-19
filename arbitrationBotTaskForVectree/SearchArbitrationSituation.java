@@ -101,13 +101,11 @@ class ParsingThisSiuation{
 
             //пропускаем валюту для которого проводится этот парсинг
             if (nameСurrency.equals(currencyPair)) {
-                System.out.println("та же валюта " + currencyPair);
                 continue;
             }
 
             //пропускаем пары валют, в которых не входит нужная нам валюта
             if ((currencyPair.indexOf(nameOffer)) == -1) {
-                System.out.println("пропуск " + nameOffer + " - " + currencyPair);
                 continue;
             } else {
                 //проверяем на то, точно ли совпадает валюта
@@ -125,22 +123,49 @@ class ParsingThisSiuation{
                 }
 
                 //иначе продолжаем
-                System.out.println("добавляем в список " + orderBooksJava.get(currencyPair));
                 //добавляем в коллекцию предложение валют, которые соответсвуют требованиям.
                 listOrderBook.add(orderBooksJava.get(currencyPair));
             }
         }
 
 
-        //а теперь, нужно отпарсить валюты, соответстыующие парсингу
-        for (OrderBookJava orderRecursive : listOrderBook) {
-            recursiveArrList.add(parsing(orderRecursive, false));
+        //а теперь, нужно отпарсить список валют, которые могут представлять арбитражную ситуацю.
+        for (OrderBookJava underOBJ : listOrderBook){
+
+            /**
+             * может быть ошибка в расположении валют
+             */
+
+            String[] underPairToString = returnPairToArrString(underOBJ.getNameСurrency());
+
+            //если значение валют в стакане расположенны по умолчанию
+            if (nameOffer.equals(underPairToString[1])){
+                //поиск лучшего предложения продажи
+                float[] underFloatArr = bestOfferScanAsks(underOBJ);
+                float priceAsk = underFloatArr[0]; //его цена
+                float volumeAsk = underFloatArr[1]; //и предложение
+
+                //поиск лучшего предложения покупки
+                float[] underFloatBids = bestOfferScanBids(underOBJ);
+                float priceBid = underFloatArr[0]; //его цена
+                float volumeBid = underFloatArr[1]; //и предложение
+
+                //покупаем ровно столько сколько сможеи продать
+
+            }
+            else{
+
+            }
+
+
+
+
+
+
+
+
+
         }
-
-
-    
-
-
 
 
 
@@ -169,6 +194,30 @@ class ParsingThisSiuation{
                 price = variablePrice;
                 volume =  orderBookJava.getAsks().get(variablePrice);
 
+            }
+        }
+
+        float[] arr = new float[]{price,volume};
+
+        return arr;
+    }
+
+    //метод, ищущий лучшие предложения покупки
+    private float[] bestOfferScanBids(OrderBookJava orderBookJava){
+        float price = 0; //цена лучшего предложения
+        float volume = 0; //и количество
+
+        //поиск лучшего предложения
+        for (float variablePrice : orderBookJava.getBids().keySet()){
+
+
+            if (price == 0){
+                price = variablePrice;
+            }
+
+            if (price < variablePrice){
+                price = variablePrice;
+                volume =  orderBookJava.getBids().get(variablePrice);
             }
         }
 
